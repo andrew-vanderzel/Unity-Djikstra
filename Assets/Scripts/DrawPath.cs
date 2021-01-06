@@ -6,7 +6,6 @@ using UnityEngine;
 public class DrawPath : MonoBehaviour
 {
     public DijkstrasAlgorithm algorithm;
-    public Gradient weightGradient;
     public float upperThreshold;
 
     public enum DrawViews
@@ -27,25 +26,6 @@ public class DrawPath : MonoBehaviour
                     nList[nList.IndexOf(node) + 1].transform.position, Color.white);
             }
         }
-        
-        
-        foreach (var node in algorithm.AllNodes)
-        {
-            float weight = Mathf.InverseLerp(0, upperThreshold, node.Weight);
-            Color weightColor = weightGradient.Evaluate(weight);
-            if (node.transform.childCount > 0)
-            {
-                if (!node.intersection)
-                {
-                    node.transform.GetChild(0).GetComponent<Renderer>().material.color = weightColor;
-                }
-                else
-                {
-                    node.transform.GetChild(0).GetComponent<Renderer>().material.color = Color.white;
-                }
-            }
-                
-        }
-        
+
     }
 }

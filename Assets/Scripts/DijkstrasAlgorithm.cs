@@ -18,12 +18,12 @@ public class DijkstrasAlgorithm : MonoBehaviour
     private void Start()
     {
         _currentNode = startNode;
-
+        AllNodes = GlobalFunctions.AllObjects();
     }
 
     private void Update()
     {
-        AllNodes = GlobalFunctions.AllObjects();
+        
         CreateNewPath();
     }
 
