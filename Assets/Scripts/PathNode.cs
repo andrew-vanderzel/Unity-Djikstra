@@ -11,35 +11,27 @@ public class PathNode : MonoBehaviour
     public float Weight { get; set;}
     public bool Explored { get; set; }
     
-    private List<PathNode> _allNodes;
+    private List<PathNode> _allUnblockedNodes;
     
     private void OnEnable() => DijkstrasAlgorithm.ResetNodes += ResetNode;
     private void OnDisable() => DijkstrasAlgorithm.ResetNodes -= ResetNode;
 
-    private void Start()
-    {
-        _allNodes = FindObjectsOfType<PathNode>().ToList().FindAll(n => n.intersection == false);
-    }
-
     //Reset values for when a new path is generated
     private void ResetNode(PathNode start, PathNode end)
     {
+        _allUnblockedNodes = FindObjectsOfType<PathNode>().Where(node => !node.intersection && node != this).ToList();
+        
         Weight = (this == start) ? 0 : 1000;
-
         Explored = false;
         NodePointingToMe = null;
 
-        GetNeighbors();
+        SetNeighbors();
     }
 
     //Get neighbors within 6 units and are not blocked
-    private void GetNeighbors()
+    private void SetNeighbors()
     {
-        NeighborNodes = (from node in _allNodes
-            where WithinDistance(this, node, 6)
-            where node != this
-            where !node.intersection
-            select node).ToList();
+        NeighborNodes = _allUnblockedNodes.Where(node => WithinDistance(this, node, 6)).ToList();
     }
     
     //Calculate distance between nodes

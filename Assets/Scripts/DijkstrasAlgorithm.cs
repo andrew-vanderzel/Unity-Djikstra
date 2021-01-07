@@ -19,27 +19,37 @@ public class DijkstrasAlgorithm : MonoBehaviour
     }
 
     //Get the next node to traverse to
-    public PathNode GetPathStep(PathNode start, PathNode target)
+    public List<PathNode> GetPath(PathNode start, PathNode target)
     {
         //Reset previously set node values
         ResetNodes?.Invoke(start, target);
         _currentNode = start;
 
         //Create path while there are unexplored nodes and the target has not been reached
-        while (_allNodes.Find(n => !n.Explored))
+        while (_allNodes.Find(n => !n.Explored) && _currentNode != target)
         {
+            //Set the weights of unexplored neighboring nodes
             ModifyDistanceValues(_currentNode.NeighborNodes);
 
             //Set current node to the next optimal node and set the new node to explored
             _currentNode = ClosestUnexplored();
             _currentNode.Explored = true;
-            
-            //Finish searching if reached target
-            if (_currentNode == target) 
-                break;
         }
         
-        return Path(target).Reverse().ToList().First();
+        return Path(target).Reverse().ToList();
+    }
+    
+    //Create the path by traversing backwards from the end to the start
+    private IEnumerable<PathNode> Path(PathNode target)
+    {
+        PathNode node = target;
+
+        //Create the backwards path until the starting node has been reached
+        while (node.NodePointingToMe)
+        {
+            yield return node;
+            node = node.NodePointingToMe;
+        }
     }
 
     //Set the weights of the current node's neighbors
@@ -71,16 +81,5 @@ public class DijkstrasAlgorithm : MonoBehaviour
         return nodesToSearch.OrderBy(n => n.Weight).First();
     }
 
-    //Create the path by traversing backwards from the end to the start
-    private IEnumerable<PathNode> Path(PathNode target)
-    {
-        PathNode node = target;
-
-        //Create the backwards path until the starting node has been reached
-        while (node.NodePointingToMe)
-        {
-            yield return node;
-            node = node.NodePointingToMe;
-        }
-    }
+ 
 }
