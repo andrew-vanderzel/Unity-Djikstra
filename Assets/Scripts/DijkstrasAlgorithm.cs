@@ -10,20 +10,21 @@ public class DijkstrasAlgorithm : MonoBehaviour
 {
     public static event Action<PathNode, PathNode> ResetNodes;
     
-    private List<PathNode> allNodes;
+    private List<PathNode> _allNodes;
     private PathNode _currentNode;
 
     private void Start()
     {
-        allNodes = GlobalFunctions.AllObjects();
+        _allNodes = FindObjectsOfType<PathNode>().ToList();
     }
-    
+
+    //Get the next node to traverse to
     public PathNode GetPathStep(PathNode start, PathNode target)
     {
         ResetNodes?.Invoke(start, target);
         _currentNode = start;
         
-        while (allNodes.Find(n => !n.Explored))
+        while (_allNodes.Find(n => !n.Explored))
         {
             ModifyDistanceValues(_currentNode.NeighborNodes);
 
@@ -37,10 +38,11 @@ public class DijkstrasAlgorithm : MonoBehaviour
         return Path(target).Reverse().ToList().First();
     }
 
+    //Set the weights of the current node's neighbors
     private void ModifyDistanceValues(List<PathNode> neighbors)
     {
 
-        var unexploredNeighbors = from node in allNodes
+        var unexploredNeighbors = from node in _allNodes
             where !node.Explored && neighbors.Contains(node)
             select node;
         
@@ -58,13 +60,15 @@ public class DijkstrasAlgorithm : MonoBehaviour
         }
     }
 
+    //Return the currently exploring node's cloest unexplored neighbor
     private PathNode ClosestUnexplored()
     {
         //Create a list of unexplored nodes, excluding the current node
-        var nodesToSearch = allNodes.Where(n => !n.Explored);
+        var nodesToSearch = _allNodes.Where(n => !n.Explored);
         return nodesToSearch.OrderBy(n => n.Weight).First();
     }
 
+    //Create the path by traversing backwards from the end to the start
     private IEnumerable<PathNode> Path(PathNode target)
     {
         PathNode node = target;

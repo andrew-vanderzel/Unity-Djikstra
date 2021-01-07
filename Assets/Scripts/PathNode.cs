@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -18,7 +19,12 @@ public class PathNode : MonoBehaviour
 
     private void Start()
     {
-        _allNodes = GlobalFunctions.AllObjects();
+        _allNodes = FindObjectsOfType<PathNode>().ToList().FindAll(n => n.intersection == false);
+    }
+
+    private void Update()
+    {
+        //transform.position = new Vector3(Mathf.Round(transform.position.x), 0, Mathf.Round(transform.position.z));
     }
 
     private void ResetNode(PathNode start, PathNode end)
@@ -34,7 +40,7 @@ public class PathNode : MonoBehaviour
     private void GetNeighbors()
     {
         var nearbyNodes = from node in _allNodes
-            where WithinDistance(this, node, 3) && node != this && !node.intersection
+            where WithinDistance(this, node, 6) && node != this && !node.intersection
             select node;
 
         NeighborNodes = nearbyNodes.ToList();

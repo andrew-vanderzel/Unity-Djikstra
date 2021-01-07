@@ -4,25 +4,26 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public DijkstrasAlgorithm algorithm;
+    
     public PathNode endPoint;
     public float speed;
-    public DijkstrasAlgorithm algorithm;
-    public Vector3 target;
-    private float yOffset;
+    
+    private Vector3 _target;
     private PathNode pathNodeScript;
+    
     void Start()
     {
-        pathNodeScript = GetComponent<PathNode>();
-        yOffset = transform.position.y;
+        pathNodeScript = transform.GetComponent<PathNode>();
     }
 
     // Update is called once per frame
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Space))
-            target = algorithm.GetPathStep(pathNodeScript, endPoint).transform.position;
+            _target = algorithm.GetPathStep(pathNodeScript, endPoint).transform.position;
 
-        if (target != Vector3.zero)
-            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+        if (_target != Vector3.zero)
+            transform.position = Vector3.MoveTowards(transform.position, _target, speed * Time.deltaTime);
     }
 }
