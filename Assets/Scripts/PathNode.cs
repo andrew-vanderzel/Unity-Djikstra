@@ -1,30 +1,37 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class PathNode : MonoBehaviour
 {
-    public bool Explored {get; set;}
-    public PathNode NodeToMe;
-    public float Weight;
-    public List<PathNode> NeighborNodes;
+    
+    public bool intersection { get; private set; }
+    public List<PathNode> NeighborNodes { get; private set; }
+    public PathNode NodePointingToMe {get; set;}
+    public float Weight { get; set;}
+    public bool Explored { get; set; }
+    
     private List<PathNode> _allNodes;
-    public bool intersection;
+    
+    private void OnEnable() => DijkstrasAlgorithm.ResetNodes += ResetNode;
+    private void OnDisable() => DijkstrasAlgorithm.ResetNodes -= ResetNode;
+
     private void Start()
     {
         _allNodes = GlobalFunctions.AllObjects();
-        GetNeighbors();
     }
 
-    private void Update()
+    private void ResetNode(PathNode start, PathNode end)
     {
+        Weight = (this == start) ? 0 : 1000;
+
+        Explored = false;
+        NodePointingToMe = null;
+
         GetNeighbors();
     }
 
-
-    public void GetNeighbors()
+    private void GetNeighbors()
     {
         var nearbyNodes = from node in _allNodes
             where WithinDistance(this, node, 3) && node != this && !node.intersection
@@ -32,7 +39,7 @@ public class PathNode : MonoBehaviour
 
         NeighborNodes = nearbyNodes.ToList();
     }
-    
+
     private bool WithinDistance(PathNode from, PathNode to, float threshold)
     {
         return Vector3.Distance(from.transform.position, to.transform.position) < threshold;
@@ -40,13 +47,13 @@ public class PathNode : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Obsticle")
+        if (other.tag == "Obsticle")
             intersection = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.tag == "Obsticle")
+        if (other.tag == "Obsticle")
             intersection = false;
     }
 }

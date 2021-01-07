@@ -16,7 +16,7 @@ public class DrawPath : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        /*
         foreach (var node in algorithm.generatedPath)
         {
             if (node != algorithm.generatedPath.Last())
@@ -26,6 +26,7 @@ public class DrawPath : MonoBehaviour
                     nList[nList.IndexOf(node) + 1].transform.position, Color.white);
             }
         }
+        */
 
     }
 }
