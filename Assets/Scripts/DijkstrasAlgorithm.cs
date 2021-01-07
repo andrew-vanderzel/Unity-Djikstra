@@ -21,16 +21,20 @@ public class DijkstrasAlgorithm : MonoBehaviour
     //Get the next node to traverse to
     public PathNode GetPathStep(PathNode start, PathNode target)
     {
+        //Reset previously set node values
         ResetNodes?.Invoke(start, target);
         _currentNode = start;
-        
+
+        //Create path while there are unexplored nodes and the target has not been reached
         while (_allNodes.Find(n => !n.Explored))
         {
             ModifyDistanceValues(_currentNode.NeighborNodes);
 
+            //Set current node to the next optimal node and set the new node to explored
             _currentNode = ClosestUnexplored();
             _currentNode.Explored = true;
-
+            
+            //Finish searching if reached target
             if (_currentNode == target) 
                 break;
         }
@@ -41,17 +45,16 @@ public class DijkstrasAlgorithm : MonoBehaviour
     //Set the weights of the current node's neighbors
     private void ModifyDistanceValues(List<PathNode> neighbors)
     {
-
-        var unexploredNeighbors = from node in _allNodes
-            where !node.Explored && neighbors.Contains(node)
-            select node;
+        //Find unexplored neighbors
+        var unexploredNeighbors = neighbors.Where(node => !node.Explored);
         
         foreach (var uNeighbor in unexploredNeighbors)
         {
-            float distanceFromNeighbor =
-                Vector3.Distance(_currentNode.transform.position, uNeighbor.transform.position);
-            float distanceFromStart = distanceFromNeighbor + _currentNode.Weight;
-
+            //Calculate current node distance from neighbor
+            float distFromNeighbor = Vector3.Distance(_currentNode.transform.position, uNeighbor.transform.position);
+            //Calculate the neighbor's distance from the start
+            float distanceFromStart = distFromNeighbor + _currentNode.Weight;
+            
             if (distanceFromStart < uNeighbor.Weight)
             {
                 uNeighbor.Weight = distanceFromStart;
@@ -73,6 +76,7 @@ public class DijkstrasAlgorithm : MonoBehaviour
     {
         PathNode node = target;
 
+        //Create the backwards path until the starting node has been reached
         while (node.NodePointingToMe)
         {
             yield return node;
